@@ -8,6 +8,79 @@
 
 import Foundation
 
+
+
+//REDUCE FUNCTION
+func customReduce(startingNum: Double, inputArray: [Double], reduce: (Double, Double) -> Double) -> Double {
+    var sum = startingNum
+    for number in inputArray {
+        sum = reduce(sum, number)
+    }
+    return sum
+}
+
+//REDUCE ADDITION CLOSURE
+let reduceAdditionClosure = {(int1: Double, int2: Double) -> Double in
+    return int1 + int2
+}
+
+//REDUCE MULTIPLY CLOSURE
+var reduceMultiplyClosure = { (firstValue: Double, nextValue: Double) -> Double in
+    return firstValue * nextValue
+}
+
+//MAP FUNCTION
+func customMap(givenNumber: Double, inputArray: [Double], map: (Double, Double) -> Double) -> [Double] {
+    var anArray = [Double]()
+    for number in inputArray {
+        let result = map(number, givenNumber)
+        anArray.append(result)
+    }
+    return anArray
+}
+
+//MAP MULTIPLY CLOSURE
+let mapMultiplyClosure = {(num1: Double, givenNumber: Double) -> Double in
+    return num1 * givenNumber
+}
+
+//MAP DIVIDE CLOSURE
+let mapDivideClosure = {(num1: Double, givenNumber: Double) -> Double in
+    return num1 / givenNumber
+}
+
+//FILTER FUNCTION
+func customFilter(inputArray: [Double], filter: (Double) -> Bool) -> [Double] {
+    var emptyArray = [Double]()
+    for number in inputArray {
+        if filter(number) {
+            emptyArray.append(number)
+        }
+    }
+    return emptyArray
+}
+
+
+//FUNCTION FOR RANDOM OPERATOR GAME
+func randomGame(a:Double, b:Double) {
+    let operandList = ["+", "-", "*", "/","?"]
+    if let randomOperator = operandList.randomElement() {
+        let randomOperation = mathStuffFactory(opString: randomOperator)
+        let result = randomOperation(a, b)
+        print("\(a) ? \(b) = \(result)")
+        print("Which operand did the calculator use?")
+        let userInput = readLine()
+        if userInput == randomOperator {
+            print("Correct!")
+            startCalculator()
+        } else {
+            print("Wrong! The correct answer is \(randomOperator)")
+            startCalculator()
+        }
+    }
+}
+
+//FUNCTION FOR SIMPLE MATH
 func mathStuffFactory(opString: String) -> (Double, Double) -> Double {
 
     switch opString {
@@ -24,6 +97,7 @@ func mathStuffFactory(opString: String) -> (Double, Double) -> Double {
     }
 }
 
+//FUNCTION FOR SIMPLE MATH CALCULATOR
 func regularCalculator() {
 
     var firstDouble: Double
@@ -61,44 +135,81 @@ func regularCalculator() {
         }
 
     }
-    startMenu()
+    startCalculator()
 }
 
+//FUNCTION FOR HIGH-ORDER FUNCTION CALCULATOR
 func complexCalculator() {
-    
-    var highOrderInt2: Int
-    var highOrderArray: [Int]()
-    
-    if let complexInput = readLine()?.components(separatedBy: " ") {
-       
-        
-        
+    let complexInputOptional = readLine()?.lowercased().components(separatedBy: " ")
+    guard let complexInput = complexInputOptional else {
+        print("You enter nothing. Please try again.")
+        return complexCalculator()
     }
-    startMenu()
+    let highOrderWord = complexInput[0]
+    let arrayOfDoublesString = complexInput[1].components(separatedBy: ",")
+    let userOperator = complexInput[3]
+    let givenNumberString = complexInput[4]
     
-}
-
-
-
-func randomGame(a:Double, b:Double) {
-    let operandList = ["+", "-", "*", "/","?"]
-    if let randomOperator = operandList.randomElement() {
-        let randomOperation = mathStuffFactory(opString: randomOperator)
-        let result = randomOperation(a, b)
-        print("\(a) ? \(b) = \(result)")
-        print("Which operand did the calculator use?")
-        let userInput = readLine()
-        if userInput == randomOperator {
-            print("Correct!")
-            startMenu()
-        } else {
-            print("Wrong! The correct answer is \(randomOperator)")
-            startMenu()
+    let arrayOfDoubles = arrayOfDoublesString.compactMap({numStr in Double(numStr)})
+    let givenNumber = Double(givenNumberString)!    //bang need to be fixed
+    
+    switch highOrderWord {
+    case "filter":
+        switch userOperator {
+        case ">":
+            let result = customFilter(inputArray: arrayOfDoubles) { (num: Double) -> Bool in
+                return num > givenNumber
+            }
+            print(result)
+        case "<":
+            let result = customFilter(inputArray: arrayOfDoubles) { (num: Double) -> Bool in
+                return num < givenNumber
+            }
+            print(result)
+        default:
+            print("Invalid operator.")
+            complexCalculator()
         }
+        
+    case "map":
+        switch userOperator {
+        case "*":
+            let result = customMap(givenNumber: givenNumber, inputArray: arrayOfDoubles, map: mapMultiplyClosure)
+            print(result)
+        case "/":
+            let result = customMap(givenNumber: givenNumber, inputArray: arrayOfDoubles, map: mapDivideClosure)
+            print(result)
+        default:
+            print("Invalid operator.")
+            complexCalculator()
+        }
+        
+    case "reduce":
+        switch userOperator {
+        case "+":
+            let result = customReduce(startingNum: givenNumber, inputArray: arrayOfDoubles, reduce: reduceAdditionClosure)
+            print(result)
+        case "*":
+            let result = customReduce(startingNum: givenNumber, inputArray: arrayOfDoubles, reduce: reduceMultiplyClosure)
+            print(result)
+        default:
+            print("Invalid operator.")
+            complexCalculator()
+            
+        }
+    default:
+        print("You did not enter a proper high-order function.")
+        complexCalculator()
+    
+    
     }
+    
+    startCalculator()
+    
 }
 
-func startMenu(){
+//FUNCTION FOR CALCULATOR START MENU
+func startCalculator(){
     print("What type of calculation would you like? Type 1 for regular operations or 2 for high-order functions.")
     let userInput = readLine()?.lowercased()
     switch userInput{
@@ -110,77 +221,10 @@ func startMenu(){
         complexCalculator()
     default:
         print("invalid input")
-        startMenu()
+        startCalculator()
     }
 }
 
-startMenu()
+startCalculator()
 
-////MAP
-////
-//func customMap(number1: Int, inputArray: [Int], map: (Int, Int) -> Int) -> [Int] {
-//    var anArray = [Int]()
-//    for number in inputArray {
-//        let result = map(number, number1)
-//        anArray.append(result)
-//    }
-//    return anArray
-//}
-//
-//let mapMultiplyClosure = {(num1: Int, num2: Int) -> Int in
-// return num1 * num2
-//}
-//
-//let mapDivideClosure = {(num1: Int, num2: Int) -> Int in
-//    return num1 / num2
-//}
-//
-//print(customMap(number1: aNumber, inputArray: something, map: mapDivideClosure))
 
-//FILTER
-//func customFilter(inputArray: [Int], filter: (Int) -> Bool) -> [Int] {
-//    var emptyArray = [Int]()
-//    for number in inputArray {
-//        if filter(number) {
-//            emptyArray.append(number)
-//        }
-//    }
-//    return emptyArray
-//}
-//
-//let arr = [10,9,2,3,4,60]
-//let userOperator = ">"
-//let givenValue = 6
-//
-//switch userOperator {
-//case ">":
-//    let result = customFilter(inputArray: arr) { (num: Int) -> Bool in
-//        return num > givenValue
-//    }
-//case "<":
-//    let result = customFilter(inputArray: arr) { (num: Int) -> Bool in
-//        return num < givenValue
-//    }
-//default: continue
-//}
-//
-//customFilter(inputArray: array) { (num: Int) -> Bool in
-//    return num > someNumber1
-//}
-
-////REDUCE
-//func customReduce(startingNum: Int, inputArray: [Int], reduce: (Int, Int) -> Int) -> Int {
-//    var sum = startingNum
-//    for number in inputArray {
-//    sum = reduce(sum, number)
-//    }
-//return sum
-//}
-//
-//let customReduceClosure = {(int1: Int, int2: Int) -> Int in
-//   return int1 + int2
-//}
-//
-//var reduceMultiplyClosure = { (firstValue: Int, nextValue: Int) -> Int in
-//        return firstValue * nextValue
-//}
