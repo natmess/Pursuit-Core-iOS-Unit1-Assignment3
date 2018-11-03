@@ -108,7 +108,7 @@ func regularCalculator() {
             firstDouble = checkFirstDouble
         } else {
             firstDouble = 0.0
-            print("Invalid input, try again!")
+            print("Invalid input, try again! Enter your operation e.g 10 + 2")
             regularCalculator()
         }
 
@@ -116,13 +116,13 @@ func regularCalculator() {
             secondDouble = checkSecondDouble
         } else {
             secondDouble = 0.0
-            print("Invalid input, try again!")
+            print("Invalid input, try again! Enter your operation e.g 10 + 2")
             regularCalculator()
         }
 
         let operand = (userInput[1])
         if operand != "+" && operand != "-" && operand != "*" && operand != "/" && operand != "?"{
-            print("Invalid operand, try again!")
+            print("Invalid operand, try again! Enter your operation e.g 10 + 2")
             regularCalculator()
         }
 
@@ -142,17 +142,23 @@ func regularCalculator() {
 func complexCalculator() {
     let complexInputOptional = readLine()?.lowercased().components(separatedBy: " ")
     guard let complexInput = complexInputOptional else {
-        print("You enter nothing. Please try again.")
+        print("Invalid. Enter your operation e.g filter 1,2,3,4,5 by < 3")
+        return complexCalculator()
+    }
+    guard complexInput.count == 4 else {
+        print("Invalid. Enter your operation e.g filter 1,2,3,4,5 by < 3")
         return complexCalculator()
     }
     let highOrderWord = complexInput[0]
     let arrayOfDoublesString = complexInput[1].components(separatedBy: ",")
     let userOperator = complexInput[3]
     let givenNumberString = complexInput[4]
+    var givenNumber = Double(0)
     
     let arrayOfDoubles = arrayOfDoublesString.compactMap({numStr in Double(numStr)})
-    let givenNumber = Double(givenNumberString)!    //bang need to be fixed
-    
+    if let aNumber = Double(givenNumberString) {
+        givenNumber = aNumber
+    }
     switch highOrderWord {
     case "filter":
         switch userOperator {
@@ -167,7 +173,7 @@ func complexCalculator() {
             }
             print(result)
         default:
-            print("Invalid operator.")
+            print("Invalid. Enter your operation e.g filter 1,2,3,4,5 by < 3")
             complexCalculator()
         }
         
@@ -180,7 +186,7 @@ func complexCalculator() {
             let result = customMap(givenNumber: givenNumber, inputArray: arrayOfDoubles, map: mapDivideClosure)
             print(result)
         default:
-            print("Invalid operator.")
+            print("Invalid. Enter your operation e.g filter 1,2,3,4,5 by < 3")
             complexCalculator()
         }
         
@@ -193,12 +199,12 @@ func complexCalculator() {
             let result = customReduce(startingNum: givenNumber, inputArray: arrayOfDoubles, reduce: reduceMultiplyClosure)
             print(result)
         default:
-            print("Invalid operator.")
+            print("Invalid. Enter your operation e.g filter 1,2,3,4,5 by < 3")
             complexCalculator()
             
         }
     default:
-        print("You did not enter a proper high-order function.")
+        print("Invalid. Enter your operation e.g filter 1,2,3,4,5 by < 3")
         complexCalculator()
     
     
@@ -220,7 +226,7 @@ func startCalculator(){
         print("Enter your operation e.g filter 1,2,3,4,5 by < 3")
         complexCalculator()
     default:
-        print("invalid input")
+        print("Invalid input. What type of calculation would you like? Type 1 for regular operations or 2 for high-order functions.")
         startCalculator()
     }
 }
